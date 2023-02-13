@@ -12,4 +12,4 @@ Me:
 
 ## Other than that
 
-I love to make things, and the most magical stuff appear here.
+I love to make things, and the stuff I deem most interesting appear here.
