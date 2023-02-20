@@ -184,11 +184,13 @@ class GravC4 {
 
     async evaluate() {
         if (this.sess === undefined) {
-            console.log('sess not ready');
-            return;
+            throw new Error("Session not ready");
         }
         if (this.busy) {
-            return;
+            throw new Error("Search busy");
+        }
+        if (this.game.gameOver) {
+            throw new Error("Game is already over");
         }
         this.busy = true;
         this.doNotSearch = false;
