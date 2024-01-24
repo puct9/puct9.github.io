@@ -183,7 +183,6 @@ class Dream {
             } else {
                 this.a.data[0] = 1;
             }
-            console.log(this.a.data);
 
             const res = await this.rssmSess.run({ prev_z: this.z, prev_a: this.a, prev_h: this.h });
             // TODO: Can do away with this.z, h
