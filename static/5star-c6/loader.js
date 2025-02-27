@@ -57,17 +57,18 @@ function displayHeatmap(data2d, rowIdxs) {
     Plotly.newPlot("heatmap-container", [trace], layout);
 }
 
-async function show(cons, guarantee) {
+async function show(cons, guarantee, captrad) {
     if (prob === undefined) await downloadProbs();
 
-    // Array shape [ cons=8 guarantee=2 pulls_remaining=1261 pity=90 ]
-    const blockSize = 1261 * 90;
-    cons = cons == -1 ? 7 : cons;
-    const block = cons * 2 + guarantee;
+    // Array shape [ cons=7 guarantee=2 captrad_pity=4 pulls=1170 pity=90 ]
+    const blockSize = 1170 * 90;
+    cons = cons == -1 ? 6 : cons;
+    const block = cons * 2 * 4 + guarantee * 4 + captrad;
     const start = block * blockSize;
     const end = (block + 1) * blockSize;
-    const all = reshapeTo2D(prob.slice(start, end), 1261, 90);
+    const all = reshapeTo2D(prob.slice(start, end), 1170, 90);
     const rows = all.map((row, idx) => row[89] > 0.005 && row[0] < 0.995 ? idx : undefined).filter(x => x !== undefined);
     const data = rows.map(idx => all[idx]);
-    displayHeatmap(data, rows);
+    const rows_plus_1 = rows.map(x => x + 1);
+    displayHeatmap(data, rows_plus_1);
 }
