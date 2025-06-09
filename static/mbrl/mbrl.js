@@ -78,7 +78,7 @@ class Display {
 }
 
 class Dream {
-    constructor(parent, rssmSessProvider, zhTransformSessProvider, decoderSessProvider, zhToImageAuxSessProvider) {
+    constructor(parent, rssmSessProvider, zhTransformSessProvider, decoderSessProvider, zhToImageAuxSessProvider, acSessProvider) {
         this.parent = parent;
         // Display
         this.gameDisplay = new Display(parent, 480, 480, 64, 64);
@@ -92,10 +92,11 @@ class Dream {
         this.zhTransformSess = undefined;
         this.decoderSess = undefined;
         this.zhToImageAuxSess = undefined;
+        this.acSess = undefined;
 
         // Button to prompt loading of the game
         const btn = document.createElement('button');
-        btn.innerText = "Press to load (~40MB)";
+        btn.innerText = "Press to load (~50MB)";
         this.gameDisplay.hide();
         this.zDistDisplay.hide();
         this.zSampleDisplay.hide();
@@ -107,6 +108,7 @@ class Dream {
                 zhTransformSessProvider,
                 decoderSessProvider,
                 zhToImageAuxSessProvider,
+                acSessProvider,
             );
         };
         this.waitReady().then(() => {
@@ -117,13 +119,13 @@ class Dream {
         });
         parent.appendChild(btn);
 
-        // Model state
-        const z = arrayZeros([1, 32, 32]);
-        const h = arrayZeros([1, 512]);
-        const a = [[1, 0, 0, 0, 0]];
-        this.z = new ort.Tensor('float32', z.flat(2), [1, 32, 32]);
-        this.h = new ort.Tensor('float32', h.flat(2), [1, 512]);
-        this.a = new ort.Tensor('float32', a.flat(2), [1, 5]);
+        this.resetModelState();
+        // Button to be able to reset model state
+        const resetBtn = document.createElement('button');
+        resetBtn.innerText = "Reset";
+        this.resetNext = false;
+        resetBtn.onclick = () => { this.resetNext = true; };
+        parent.appendChild(resetBtn);
 
         // User controls
         this.pressed = { w: false, a: false, s: false, d: false };
@@ -144,8 +146,19 @@ class Dream {
             this.rssmSess !== undefined &&
             this.zhTransformSess !== undefined &&
             this.decoderSess !== undefined &&
-            this.zhToImageAuxSess !== undefined
+            this.zhToImageAuxSess !== undefined &&
+            this.acSess !== undefined
         )
+    }
+
+    resetModelState() {
+        // Model state
+        const z = arrayZeros([1, 32, 32]);
+        const h = arrayZeros([1, 512]);
+        const a = [[1, 0, 0, 0, 0]];
+        this.z = new ort.Tensor('float32', z.flat(2), [1, 32, 32]);
+        this.h = new ort.Tensor('float32', h.flat(2), [1, 512]);
+        this.a = new ort.Tensor('float32', a.flat(2), [1, 5]);
     }
 
     async waitReady() {
@@ -153,11 +166,12 @@ class Dream {
         if (!this.ready()) { return this.waitReady(); }
     }
 
-    loadAndStartGame(rssmSessProvider, zhTransformSessProvider, decoderSessProvider, zhToImageAuxSessProvider) {
+    loadAndStartGame(rssmSessProvider, zhTransformSessProvider, decoderSessProvider, zhToImageAuxSessProvider, acSessProvider) {
         rssmSessProvider(this.parent).then(sess => { this.rssmSess = sess; });
         zhTransformSessProvider(this.parent).then(sess => { this.zhTransformSess = sess; });
         decoderSessProvider(this.parent).then(sess => { this.decoderSess = sess; });
         zhToImageAuxSessProvider(this.parent).then(sess => { this.zhToImageAuxSess = sess; });
+        acSessProvider(this.parent).then(sess => { this.acSess = sess; });
 
         this.waitReady().then(() => this.play());
     }
@@ -170,18 +184,35 @@ class Dream {
         let steeringPriority = 0;
         for (; ;) {
             const startTime = Date.now();
-            
-            steeringPriority = (steeringPriority + 1) % 3;
-            const steering = this.pressed.a - this.pressed.d;
+
+            const state_old = await this.zhTransformSess.run({ z: this.z, h: this.h });
+            const ac_eval = await this.acSess.run(state_old);
+
+            const action_probs = Float32Array.from(ac_eval.action_log.data, Math.exp);
+            const r = Math.random();
             this.a.data.fill(0);
-            if ((steeringPriority || (!this.pressed.s && !this.pressed.w)) && steering !== 0) {
-                this.a.data[1 + (steering + 1) / 2] = 1;
-            } else if (this.pressed.s) {
-                this.a.data[4] = 1;
-            } else if (this.pressed.w) {
-                this.a.data[3] = 1;
-            } else {
-                this.a.data[0] = 1;
+            let s = 0.0;
+            for (let i = 0; i < 5; i++) {
+                s += action_probs[i];
+                if (s >= r) {
+                    this.a.data[i] = 1;
+                    break;
+                }
+            }
+
+            if (this.pressed.w || this.pressed.a || this.pressed.s || this.pressed.d) {
+                steeringPriority = (steeringPriority + 1) % 3;
+                const steering = this.pressed.a - this.pressed.d;
+                this.a.data.fill(0);
+                if ((steeringPriority || (!this.pressed.s && !this.pressed.w)) && steering !== 0) {
+                    this.a.data[1 + (steering + 1) / 2] = 1;
+                } else if (this.pressed.s) {
+                    this.a.data[4] = 1;
+                } else if (this.pressed.w) {
+                    this.a.data[3] = 1;
+                } else {
+                    this.a.data[0] = 1;
+                }
             }
 
             const res = await this.rssmSess.run({ prev_z: this.z, prev_a: this.a, prev_h: this.h });
@@ -199,7 +230,6 @@ class Dream {
             // Draw decoder output image
             this.gameDisplay.showImage(imgData);
 
-            // TODO: Draw latent images
             const latentImages = await this.zhToImageAuxSess.run(res);
 
             const zDistU8px = Uint8ClampedArray.from(latentImages.z_probs_img.data, x => clip(x * 255, 0, 255));
@@ -217,6 +247,11 @@ class Dream {
             // The game naturally runs ~50FPS
             const endTime = Date.now();
             await sleep(Math.max(5, 1000 / 50 - (endTime - startTime)));
+
+            if (this.resetNext) {
+                this.resetNext = false;
+                this.resetModelState();
+            }
         }
     }
 }
@@ -240,6 +275,7 @@ const initGames = () => {
             createSessionProvider(d.getAttribute("zh-transform")),
             createSessionProvider(d.getAttribute("decoder")),
             createSessionProvider(d.getAttribute("zh-to-image-aux")),
+            createSessionProvider(d.getAttribute("ac")),
         );
     }
 };
