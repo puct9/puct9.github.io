@@ -4,6 +4,8 @@ title: About
 permalink: /about/
 ---
 
+In 2016, a high school student armed with a barebones set of mathematical and statistical understanding but an infinite amount of time was captivated by the achievements of AlphaGo and decides he wants to try it for himself...
+
 ## Experience
 
 - Graduated Monash University with a [Bachelor of Computer Science Advanced (Honours)](https://handbook.monash.edu/2020/courses/C3001)
@@ -11,7 +13,7 @@ permalink: /about/
 - IMC summer internship SWE (11/2022 - 2/2023)
 - IMC graduate SWE
   - Delta 1 desk dev (2/2024 - 12/2024)
-  - ML Engineering (1/2025 - Present)
+  - ML Engineering & Research (1/2025 - Present)
 
 ## Publications
 
@@ -19,4 +21,6 @@ permalink: /about/
 
 ## Interests
 
-I like to explore the intersections of all my hobbies -- gaming, computer science, programming, machine learning, and mathematics... (Though admittedly I'm better at some than others!)
+- ML
+- Genshin Impact
+- Jax
