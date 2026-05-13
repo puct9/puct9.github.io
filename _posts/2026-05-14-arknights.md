@@ -12,6 +12,8 @@ Technologies:
 - OR-Tools CP-SAT (Python)
 - Matplotlib
 
+Code: https://github.com/puct9/endfield-placement
+
 ## About the game
 
 [Arknights Endfield](https://endfield.gryphline.com/en-us) is a [gacha game](https://en.wikipedia.org/wiki/Gacha_game) released not so long ago and features all the usual cute looking characters and loot box mechanics you would expect. However, it's unique in also having a factory building element! I've since stopped playing because I found myself being stretched needing to simultaneously feed my [Genshin Impact](https://genshin.hoyoverse.com/en/) addiction, but the puzzle of figuring out how to lay out your factory in a space efficient manner was something I wasn't going to let go as quickly.
