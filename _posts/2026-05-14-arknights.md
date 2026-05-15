@@ -12,7 +12,7 @@ Technologies:
 - OR-Tools CP-SAT (Python)
 - Matplotlib
 
-Code: https://github.com/puct9/endfield-placement
+Code: [https://github.com/puct9/endfield-placement](https://github.com/puct9/endfield-placement)
 
 ## About the game
 
