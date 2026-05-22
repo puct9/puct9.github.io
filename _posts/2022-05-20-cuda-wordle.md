@@ -1,12 +1,10 @@
 ---
 layout: post
-title:  "Behind the scenes - Curdle"
+title:  "CUDA Accelerated Wordle Solving"
 date:   2022-05-20 00:26:00 +1000
 categories: cuda cpp wordle math
 ---
-# Behind the scenes - Curdle
-
-[GitHub repository](https://github.com/puct9/curdle)
+# CUDA Accelerated Wordle
 
 Technologies:  
 - Windows/Linux
@@ -42,8 +40,8 @@ The general idea is this:
 
 I take advantage of a few other facts about the game
 
-- There is a fixed [list of 2309 possible answers](https://github.com/puct9/curdle/blob/master/wordle_answers.txt)
-- There is a fixed [list of 12947 valid guesses](https://github.com/puct9/curdle/blob/master/wordle_guesses.txt) - note that this list does not include the list of answers, even though they are valid guesses
+- There is a fixed list of 2309 possible answers
+- There is a fixed list of 12947 valid guesses - note that this list does not include the list of answers, even though they are valid guesses
 
 At the start of the game, the entropy $k = \log_2(2309) \approx 11.173$. Now the question is, what answer gives us the best shot at reducing $k$ the most?
 
@@ -166,9 +164,9 @@ This approach works well because:
 - Computing $L_v$ is fast on GPU.
 - Computing the sum of a row of a matrix is fast on GPU.
 
-## The implementation
+## The implementation[^1]
 
-All the CUDA kernels can be found in the [source code](https://github.com/puct9/curdle/blob/master/src/kernels.cu), but I will explain the interesting ones here.
+[^1]: Not comprehensive
 
 It should be noted that the matrix of unsigned 8-bit integers is casted to single precision floats as some operations only support this data type. Floating point precision is not an issue.
 
