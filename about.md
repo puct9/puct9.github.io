@@ -101,9 +101,16 @@ In 2017, a high school student armed with a barebones set of mathematical and st
 ## Publications
 
 1. Aggarwal, S., de la Banda, A.S., Yang, L., Gutierrez, J. (2023). A Matrix-Based Approach to Parity Games. In: Sankaranarayanan, S., Sharygina, N. (eds) Tools and Algorithms for the Construction and Analysis of Systems. TACAS 2023. Lecture Notes in Computer Science, vol 13993. Springer, Cham. [https://doi.org/10.1007/978-3-031-30823-9_34](https://doi.org/10.1007/978-3-031-30823-9_34)
+2. Abdulaziz Alyahya, Abdallah Al Siyabi, Markus R. Ernst, Luke Yang, Levin Kuhlmann, & Gideon Kowadlo (2026). ARROW: Augmented Replay for RObust World models. Transactions on Machine Learning Research. [https://doi.org/10.48550/arXiv.2603.11395](https://doi.org/10.48550/arXiv.2603.11395)
+
+### Thesis
+
+Yang, L., Kuhlmann, L., & Kowadlo, G. (2024). Augmenting Replay in World Models for Continual Reinforcement Learning (Version 3). arXiv. [https://doi.org/10.48550/arXiv.2401.16650](https://doi.org/10.48550/arXiv.2401.16650)
 
 ## Interests
 
-- ML
-- Genshin Impact
+- ML [^1]
+- Genshin Impact ([top 500 C2R1 Mualani and top 0.5% C6R1 Skirk](https://akasha.cv/profile/855182042))
 - Jax
+
+[^1]: Duh
