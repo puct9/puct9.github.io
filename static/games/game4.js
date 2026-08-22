@@ -38,12 +38,13 @@
             <div class="game4-panel" style="position: relative; max-width: 42rem; padding: 1rem; border: 1px solid #ccc; border-radius: 0.4rem;">
                 <button type="button" data-reset style="position: absolute; top: 1rem; right: 1rem;">Reset</button>
                 <p style="margin-top: 0; padding-right: 4rem;"><strong>Balance: <span data-balance></span></strong></p>
-                <p>Stock price: <strong data-price></strong><br>Model preview move: <strong data-preview></strong><br>Current position: <strong data-position>0 shares</strong></p>
+                <p>Stock price: <strong data-price></strong><br>Model preview move: <strong data-preview></strong></p>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-bottom: 1rem;">
                     <div><strong>Stock price history</strong><canvas data-price-chart width="340" height="180" aria-label="Chart showing stock price history" style="display: block; width: 100%; height: 180px;"></canvas></div>
                     <div><strong>Player balance history</strong><canvas data-balance-chart width="340" height="180" aria-label="Chart showing player balance history" style="display: block; width: 100%; height: 180px;"></canvas></div>
                 </div>
                 <p>The model's hint is noisy, but it is correlated with the next dollar move. Choose your target position for the next move. Positive shares are long; negative shares are short. Every traded share costs you $0.10.</p>
+                <p style="margin-bottom: 0;">Current position: <strong data-position>0 shares</strong></p>
                 <label>Target position: <strong data-shares>0 shares</strong><br>
                     <input data-slider type="range" min="-10" max="10" step="1" value="0" style="width: min(100%, 20rem);">
                 </label>
@@ -140,8 +141,7 @@
             const requestedChange = requestedShares - position;
             const requestedDirection = Math.sign(requestedChange);
             stockPrice += hiddenMove;
-            const exposure = requestedShares !== 0 ? requestedShares : position;
-            const isAgainst = exposure * hiddenMove < 0;
+            const isAgainst = requestedChange * hiddenMove < 0;
             let filledShares = requestedChange;
             if (!isAgainst) {
                 filledShares = 0;
@@ -157,6 +157,7 @@
             priceHistory.push(stockPrice);
             balanceHistory.push(balance());
             generateNextMove();
+            slider.value = String(position);
             updateDisplay();
             summary.textContent = `Round ${round}: requested to ${requestedChange >= 0 ? "buy" : "sell"} ${Math.abs(requestedChange)} ${Math.abs(requestedChange) === 1 ? "share" : "shares"}; filled ${Math.abs(filledShares)} ${Math.abs(filledShares) === 1 ? "share" : "shares"}. `
                 + `Trade fee: ${money(tradeFee)}. `
