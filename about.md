@@ -33,8 +33,19 @@ In 2017, a high school student armed with a barebones set of mathematical and st
 
 <div class="cv-entry">
   <div class="cv-left">
+    <span class="cv-org">Jane Street</span>
+    <span class="cv-date">10/2026–Present</span>
+  </div>
+  <div class="cv-right">
+    Software Engineer<br>
+    <i>Research</i>
+  </div>
+</div>
+
+<div class="cv-entry">
+  <div class="cv-left">
     <span class="cv-org">Home</span>
-    <span class="cv-date">03/2026–Present</span>
+    <span class="cv-date">03/2026–10/2026</span>
   </div>
   <div class="cv-right">
     Gardening (metaphorically)
