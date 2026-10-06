@@ -15,7 +15,9 @@ In 2017, a high school student armed with a barebones set of mathematical and st
     line-height: 1.4;
   }
   .cv-left {
-    min-width: 140px;
+    width: 170px;
+    flex-shrink: 0;
+    box-sizing: border-box;
     padding-right: 20px;
   }
   .cv-org {
@@ -59,7 +61,7 @@ In 2017, a high school student armed with a barebones set of mathematical and st
   </div>
   <div class="cv-right">
     Graduate Software Engineer<br>
-    <i>MLE & Equities Research</i>
+    <i>MLE & Equities NN Research</i>
   </div>
 </div>
 
